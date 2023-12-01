@@ -3,6 +3,6 @@
     public class Test
     {
         //test
-
+        public int Id { get; set; }
     }
 }
