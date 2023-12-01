@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\email\\Source\\Repos\\Online-Shop\\OnlineShop.csproj": {}
+    "C:\\Users\\email\\source\\repos\\Online-Shop\\OnlineShop.csproj": {}
   },
   "projects": {
-    "C:\\Users\\email\\Source\\Repos\\Online-Shop\\OnlineShop.csproj": {
+    "C:\\Users\\email\\source\\repos\\Online-Shop\\OnlineShop.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\email\\Source\\Repos\\Online-Shop\\OnlineShop.csproj",
+        "projectUniqueName": "C:\\Users\\email\\source\\repos\\Online-Shop\\OnlineShop.csproj",
         "projectName": "OnlineShop",
-        "projectPath": "C:\\Users\\email\\Source\\Repos\\Online-Shop\\OnlineShop.csproj",
+        "projectPath": "C:\\Users\\email\\source\\repos\\Online-Shop\\OnlineShop.csproj",
         "packagesPath": "C:\\Users\\email\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\email\\Source\\Repos\\Online-Shop\\obj\\",
+        "outputPath": "C:\\Users\\email\\source\\repos\\Online-Shop\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\email\\AppData\\Roaming\\NuGet\\NuGet.Config",
