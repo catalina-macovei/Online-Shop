@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\email\\source\\repos\\Online-Shop\\OnlineShop.csproj": {}
+    "C:\\Users\\user\\source\\repos\\OnlineShop\\OnlineShop.csproj": {}
   },
   "projects": {
-    "C:\\Users\\email\\source\\repos\\Online-Shop\\OnlineShop.csproj": {
+    "C:\\Users\\user\\source\\repos\\OnlineShop\\OnlineShop.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\email\\source\\repos\\Online-Shop\\OnlineShop.csproj",
+        "projectUniqueName": "C:\\Users\\user\\source\\repos\\OnlineShop\\OnlineShop.csproj",
         "projectName": "OnlineShop",
-        "projectPath": "C:\\Users\\email\\source\\repos\\Online-Shop\\OnlineShop.csproj",
-        "packagesPath": "C:\\Users\\email\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\email\\source\\repos\\Online-Shop\\obj\\",
+        "projectPath": "C:\\Users\\user\\source\\repos\\OnlineShop\\OnlineShop.csproj",
+        "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\user\\source\\repos\\OnlineShop\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\email\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -80,7 +80,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     }
