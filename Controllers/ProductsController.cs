@@ -44,6 +44,27 @@ namespace OnlineShop.Controllers
             return View(product);
         }
 
+        [HttpPost]
+        public IActionResult Show([FromForm] Comment comment)
+        {
+            comment.Date = DateTime.Now;
+            if (ModelState.IsValid)
+            {
+                db.Comments.Add(comment);
+                db.SaveChanges();
+                return Redirect("/Products/Show/" +
+                comment.ProductId);
+            }
+            else
+            {
+                Product prod =
+                db.Products.Include("Category").Include("Comments")
+                .Where(prod => prod.Id == comment.ProductId)
+                .First();
+                //return Redirect("/Articles/Show/" + comm.ArticleId);
+                return View(prod);
+            }
+        }
 
         // HttpGet implicit
         // Afisare formular de completare detalii produs
