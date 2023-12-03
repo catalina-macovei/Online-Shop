@@ -1,5 +1,54 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model OnlineShop.Models.Product
+
+<div class="container py-5">
+    <h2 class="text-center">Add Product</h2>
+
+    <div class="row">
+        <div class="col-6 offset-3">
+            <form class="d-flex flex-column gap-3 overflow-auto" method="post" enctype="multipart/form-data" action="/Products/New">
+                <div>
+                    @Html.Label("Title", "Product Name")
+
+                    @Html.TextBox("Title", null, new { @class = "form-control" })
+                </div>
+                <div>
+                    @Html.Label("Description", "Product Decription")
+
+                    @Html.TextArea("Description", null, new { @class = "form-control"})
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div >
+                        @Html.Label("Price", "Price")
+
+                        @Html.TextBox("Price", null, new { @class = "form-control" })
+                    </div>
+                    <div >
+                        @Html.Label("Stock", "Stock")
+
+                        @Html.TextBox("Stock", null, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div>
+                    <label>Select Category</label>
+                    @Html.DropDownListFor(m => m.CategoryId,
+                    new SelectList(Model.Categories, "Value", "Text"),
+                    "Select Category", new { @class = "form-control" })
+
+                </div>
+                <div>
+                    <label for="file">Upload Photo</label>
+                    <input type="file" id="file" name="file" />
+                </div>
+                <button class="btn btn-outline" style="background-color:pink; color:black;" type="submit">Add Product</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+

@@ -21,6 +21,7 @@ a,
 a:hover,
 a:focus {
     text-decoration: none;
+    color: #272727;
 }
 
 a:hover,
@@ -102,4 +103,19 @@ footer {
     background: #fce4ec;
     text-align:center;
     padding-bottom: 1rem;
+}
+
+.card.product, .card.product img{
+    border-radius: 15px;
+}
+
+.card.product img {
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.rating-star {
+    width: 20px;
+    height: 20px;
+    color: orange;
 }
