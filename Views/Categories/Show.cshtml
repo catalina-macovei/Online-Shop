@@ -1,0 +1,16 @@
+﻿@model OnlineShop.Models.Category
+
+<p>@Model.CategoryName</p>
+
+<a class="btn alert-success" href="/Categories/Edit/@Model.Id">Editare categorie</a>
+
+<br/>
+<br/>
+
+<form method="post" action="/Categories/Delete/@Model.Id">
+
+    <button class="btn btn-danger" type="submit">Sterge categoria</button>
+
+</form>
+
+<br />

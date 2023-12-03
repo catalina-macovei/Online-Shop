@@ -5,7 +5,7 @@ namespace OnlineShop.Models
     public class Comment
     {
         [Key]
-        public int CommentId { get; set; }
+        public int Id { get; set; }
         public string Content { get; set; }
         public DateTime Date { get; set; }
         public double Rating { get; set; }

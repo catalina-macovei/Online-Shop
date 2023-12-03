@@ -1,0 +1,23 @@
+﻿@model OnlineShop.Models.Comment
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Editare comentariu</h2>
+<br />
+
+@using (Html.BeginForm(actionName: "Edit", controllerName: "Comments", method: FormMethod.Post,
+       routeValues: new { id = Model.Id }))
+{
+
+    @Html.Label("Content", "Continut comentariu")
+    <br />
+
+    @Html.TextArea("Content", null, new { @class = "form-control" })
+    <br />
+    @Html.ValidationMessageFor(m => m.Content, null, new{@class = "text-danger"})
+
+    <br />
+    <button class="btn  btn-primary" type="submit">Editeaza comentariul</button>
+
+}
