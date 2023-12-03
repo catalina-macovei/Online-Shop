@@ -1,8 +1,31 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+ 
+<section class="home_section">
+    <div class="home_container">
+        <div class="row">
+            <div class="col-md-7">
+                <div class="detail-box">
+                    <h1>
+                        Welcome To Our <br>
+                        Gift Shop   
+                    </h1>
+                    <p>
+                        It's an absolute delight to welcome you. Our shelves are a treasure trove of unique finds, ready to make your celebrations extra special. Thank you for choosing us to be part of your gifting adventure. Let's craft unforgettable moments together!
+                    </p>
+                    <a asp-area="" asp-controller="Products" asp-action="Index">
+                        Our Products
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-5 ">
+                <div class="img-box">
+                    <img src="~/img/girl.png" alt="" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+
