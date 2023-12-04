@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Scaffolding;
 using OnlineShop.Data;
 using OnlineShop.Models;
 
@@ -9,9 +11,11 @@ namespace OnlineShop.Controllers
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext db;
+        private readonly IWebHostEnvironment webHostEnvironment;
 
-        public ProductsController(ApplicationDbContext context)
+        public ProductsController(IWebHostEnvironment environment, ApplicationDbContext context)
         {
+            webHostEnvironment = environment;
             db = context;
         }
 
@@ -66,6 +70,22 @@ namespace OnlineShop.Controllers
             }
         }
 
+            if (ModelState.IsValid)
+            {
+                db.Comments.Add(comment);
+                db.SaveChanges();
+                return Redirect("/Products/Show/" + comment.ProductId);
+            }
+            else
+            {
+                Product prod = db.Products.Include("Category").Include("Comments")
+                .Where(prod => prod.Id == comment.ProductId)
+                .First();
+                //return Redirect("/Articles/Show/" + comm.ArticleId);
+                return View(prod);
+            }
+        }
+
         // HttpGet implicit
         // Afisare formular de completare detalii produs
         // Aici se va selecta si categoria din care face parte
@@ -80,16 +100,44 @@ namespace OnlineShop.Controllers
 
         // Adaugare Produs in BD
         [HttpPost]
-        public IActionResult New(Product product)
+        public IActionResult New(Product product, IFormFile file)
         {
-            product.Categories = GetAllCategories();
+            
+            //product.Categories = GetAllCategories();
 
             try
             {
-                db.Products.Add(product);
-                db.SaveChanges();
-                TempData["message"] = "Produsul a fost adaugat!";
-                return RedirectToAction("Index");
+                if (file != null && file.Length > 0)
+                {
+                    var fileExtension = Path.GetExtension(file.FileName);
+
+                    var uploadsFolder = Path.Combine("img", "products");
+                    var webRootPath = webHostEnvironment.WebRootPath;
+
+                    var uploadsFolderPath = Path.Combine(webRootPath, uploadsFolder);
+                    if (!Directory.Exists(uploadsFolderPath))
+                    {
+                        Directory.CreateDirectory(uploadsFolderPath);
+                    }
+
+                    var uniqueFileName = $"{Guid.NewGuid().ToString()}{fileExtension}";
+                    var filePath = Path.Combine(uploadsFolderPath, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+                    var relativeFilePath = Path.Combine(uploadsFolder, uniqueFileName).Replace(Path.DirectorySeparatorChar, '/');
+
+                    product.PhotoSrc = $"/{relativeFilePath}";
+
+                    db.Products.Add(product);
+                    db.SaveChanges();
+                    TempData["message"] = "Produsul a fost adaugat!";
+                    return RedirectToAction("Index");
+                }
+                
+                 throw new Exception("Image is required");
             }
             catch (Exception ex)
             {
@@ -129,7 +177,7 @@ namespace OnlineShop.Controllers
 
                 db.SaveChanges();
 
-                TempData["message"] = "Produsul a fost adaugat!";
+                TempData["message"] = "Produsul a fost editat!";
 
                 return RedirectToAction("Index");
             }

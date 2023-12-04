@@ -21,6 +21,7 @@ a,
 a:hover,
 a:focus {
     text-decoration: none;
+    color: #272727;
 }
 
 a:hover,
@@ -52,7 +53,10 @@ a:focus {
     -ms-flex-align: center;
     align-items: center;
 }
+.btn-no-outline {
+    outline: none;
 
+}
 .home_section .img-box {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -102,4 +106,19 @@ footer {
     background: #fce4ec;
     text-align:center;
     padding-bottom: 1rem;
+}
+
+.card.product, .card.product img{
+    border-radius: 15px;
+}
+
+.card.product img {
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.rating-star {
+    width: 20px;
+    height: 20px;
+    color: orange;
 }
