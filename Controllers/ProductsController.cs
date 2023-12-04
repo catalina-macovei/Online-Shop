@@ -52,6 +52,7 @@ namespace OnlineShop.Controllers
         public IActionResult Show([FromForm] Comment comment)
         {
             comment.Date = DateTime.Now;
+            comment.Rating = 0;
             if (ModelState.IsValid)
             {
                 db.Comments.Add(comment);
