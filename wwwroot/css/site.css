@@ -53,7 +53,10 @@ a:focus {
     -ms-flex-align: center;
     align-items: center;
 }
+.btn-no-outline {
+    outline: none;
 
+}
 .home_section .img-box {
     display: -webkit-box;
     display: -ms-flexbox;
