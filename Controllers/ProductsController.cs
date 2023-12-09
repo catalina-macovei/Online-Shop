@@ -11,11 +11,11 @@ namespace OnlineShop.Controllers
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext db;
-        private readonly IWebHostEnvironment webHostEnvironment;
+        private readonly IWebHostEnvironment _env;
 
         public ProductsController(IWebHostEnvironment environment, ApplicationDbContext context)
         {
-            webHostEnvironment = environment;
+            _env = environment;
             db = context;
         }
 
@@ -86,7 +86,7 @@ namespace OnlineShop.Controllers
 
         // Adaugare Produs in BD
         [HttpPost]
-        public IActionResult New(Product product, IFormFile file)
+        public async Task<IActionResult> New(Product product, IFormFile file)
         {
             
             //product.Categories = GetAllCategories();
@@ -95,35 +95,13 @@ namespace OnlineShop.Controllers
             {
                 if (file != null && file.Length > 0)
                 {
-                    var fileExtension = Path.GetExtension(file.FileName);
-
-                    var uploadsFolder = Path.Combine("img", "products");
-                    var webRootPath = webHostEnvironment.WebRootPath;
-
-                    var uploadsFolderPath = Path.Combine(webRootPath, uploadsFolder);
-                    if (!Directory.Exists(uploadsFolderPath))
-                    {
-                        Directory.CreateDirectory(uploadsFolderPath);
-                    }
-
-                    var uniqueFileName = $"{Guid.NewGuid().ToString()}{fileExtension}";
-                    var filePath = Path.Combine(uploadsFolderPath, uniqueFileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        file.CopyTo(fileStream);
-                    }
-                    var relativeFilePath = Path.Combine(uploadsFolder, uniqueFileName).Replace(Path.DirectorySeparatorChar, '/');
-
-                    product.PhotoSrc = $"/{relativeFilePath}";
-
-                    db.Products.Add(product);
-                    db.SaveChanges();
-                    TempData["message"] = "Produsul a fost adaugat!";
-                    return RedirectToAction("Index");
+                    product.PhotoSrc = await SaveImage(file);
                 }
-                
-                 throw new Exception("Image is required");
+                db.Products.Add(product);
+                db.SaveChanges();
+                TempData["message"] = "Produsul a fost adaugat!";
+                return RedirectToAction("Index");
+
             }
             catch (Exception ex)
             {
@@ -148,11 +126,10 @@ namespace OnlineShop.Controllers
         // HttpPost
         // Adaugare produs modificat in baza de date
         [HttpPost]
-        public IActionResult Edit(int id, Product requestProduct)
+        public async Task<IActionResult> Edit(int id, Product requestProduct, IFormFile file)
         {
             Product product = db.Products.Find(id);
             requestProduct.Categories = GetAllCategories();
-
             try 
             { 
                 product.Title = requestProduct.Title;
@@ -160,7 +137,11 @@ namespace OnlineShop.Controllers
                 product.Price = requestProduct.Price;
                 product.Stock = requestProduct.Stock;
                 product.CategoryId = requestProduct.CategoryId;
+                if (file != null && file.Length > 0)
+                {
+                    product.PhotoSrc = await SaveImage(file);
 
+                }
                 db.SaveChanges();
 
                 TempData["message"] = "Produsul a fost editat!";
@@ -209,5 +190,32 @@ namespace OnlineShop.Controllers
             // returnam lista de categorii
             return selectList;
         }
+
+
+        private async Task<string> SaveImage(IFormFile file)
+        {
+            var fileExtension = Path.GetExtension(file.FileName);
+            var uploadsFolder = Path.Combine("img", "products");
+            var webRootPath = _env.WebRootPath;
+
+            var uploadsFolderPath = Path.Combine(webRootPath, uploadsFolder);
+
+            if (!Directory.Exists(uploadsFolderPath))
+            {
+                Directory.CreateDirectory(uploadsFolderPath);
+            }
+
+            var uniqueFileName = $"{Guid.NewGuid().ToString()}{fileExtension}";
+            var filePath = Path.Combine(uploadsFolderPath, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            var relativeFilePath = Path.Combine(uploadsFolder, uniqueFileName).Replace(Path.DirectorySeparatorChar, '/');
+            return $"/{relativeFilePath}";
+        }
+
     }
 }
