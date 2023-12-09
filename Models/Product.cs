@@ -8,7 +8,6 @@ namespace OnlineShop.Models
     {
         [Key]        
         public int Id { get; set; }
-
         public string Title { get; set; }
         public string Description { get; set; }
 
@@ -19,13 +18,15 @@ namespace OnlineShop.Models
 
         public int Stock {  get; set; }
 
-        //public int UserId { get; set; }
-
-        public int CategoryId { get; set; }
-        public virtual Category Category { get; set; }
-        public virtual ICollection<Comment> Comments { get; set; }
+        public string? UserId { get; set; }
+        public virtual ApplicationUser? User { get; set; }
+        public int? CategoryId { get; set; }
+        public virtual Category? Category { get; set; }
+        public virtual ICollection<Comment>? Comments { get; set; }
 
         [NotMapped]
-        public IEnumerable<SelectListItem> Categories { get; set; }
+        public IEnumerable<SelectListItem>? Categories { get; set; }
+        public virtual ICollection<Cart>? Carts { get; set; }
+        public virtual ICollection<Ordered_Product>? Ordered_Products { get; set; }
     }
 }
