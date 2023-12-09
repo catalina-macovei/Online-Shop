@@ -11,9 +11,9 @@ namespace OnlineShop.Models
         public string? Content { get; set; }
         public DateTime Date { get; set; }
         public double? Rating { get; set; }
-        public int UserId { get; set; }
+        public string? UserId { get; set; }
+        public virtual ApplicationUser? User { get; set; }
         public int? ProductId { get; set; }
         public virtual Product? Product { get; set; }
-        
     }
 }
