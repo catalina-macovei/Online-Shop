@@ -59,32 +59,55 @@
                         <div class="col-md-8">
 
                             <div class="border-1">
+                                @if(comm.Rating != 0)
+                                {
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        @for (var i = 1; i <= comm.Rating; i++)
+                                        {
+                                            <svg class="rating-star" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                <path clip-rule="evenodd" fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"></path>
+                                            </svg>
+                                        }
+
+                                        @for (var i = comm.Rating; i < 5; i++)
+                                        {
+                                            <svg class="rating-star not-filled-star" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
+                                            </svg>
+                                        }
+                                    </div>
+                                }
 
                                 <p>@comm.Content</p>
                                 <small class=" text-muted">@comm.Date</small>
+                                @*<strong><i class="bi bi-person"></i>@comm.User.FirstName @comm.User.LastName</strong>*@
 
                             </div>
                             <br>
 
-                            <div class="d-flex justify-content-between">
+                            @if (comm.UserId == ViewBag.UserCurent || ViewBag.EsteAdmin)
+                            {
 
-                                <div>
+                                <div class="d-flex justify-content-between">
 
-                                    <a class="btn btn-outline-primary" href="/Comments/Edit/@comm.Id"><i class="bi bi-pencil-square"></i>Editeaza</a>
+                                    <div>
+
+                                        <a class="btn btn-outline-primary" href="/Comments/Edit/@comm.Id"><i class="bi bi-pencil-square"></i>Edit</a>
+
+                                    </div>
+
+                                    <div>
+
+                                        <form method="post" action="/Comments/Delete/@comm.Id">
+
+                                            <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Delete</button>
+
+                                        </form>
+
+                                    </div>
 
                                 </div>
-
-                                <div>
-
-                                    <form method="post" action="/Comments/Delete/@comm.Id">
-
-                                        <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Sterge</button>
-
-                                    </form>
-
-                                </div>
-
-                            </div>
+                            }
 
                             <br />
 
@@ -115,11 +138,37 @@
 
                                 <input type="hidden" name="ProductId" value="@Model.Id" />
 
-                                <label>Continut comentariu</label>
+                                <label>Rate the product:</label>
+                                <br />
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="Rating" id="1" value="1">
+                                    <label class="form-check-label" for="1">1</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="Rating" id="2" value="2">
+                                    <label class="form-check-label" for="2">2</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="Rating" id="3" value="3">
+                                    <label class="form-check-label" for="3">3</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="Rating" id="4" value="4">
+                                    <label class="form-check-label" for="4">4</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="Rating" id="5" value="5">
+                                    <label class="form-check-label" for="5">5</label>
+                                </div>
+                                <br />
+
+                                <label>Content</label>
                                 <br />
 
                                 <textarea class="form-control" name="Content"></textarea>
                                 <br />
+
+                                @Html.ValidationMessage("Content", null, new {@class = "text-danger"})
 
                                 <button class="btn btn-success " type="submit">Adauga comentariul</button>
 
