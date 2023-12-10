@@ -1,18 +1,29 @@
 ﻿@model OnlineShop.Models.Category
 
 
-@using (Html.BeginForm(actionName: "Edit", controllerName: "Categories", method: FormMethod.Post,
-   routeValues: new { id = Model.Id }))
-{
+<div class="container py-5">
+    <h2 class="text-center">Edit Category</h2>
 
-    @Html.Label("CategoryName", "Denumire categorie")
-    <br />
-    @Html.Editor("CategoryName")
-    <br />
-    @Html.ValidationMessageFor(m => m.CategoryName, null, new{@class = "text-danger"})
-    <br />
-    <br />
+    <div class="row">
+        <div class="col-6 offset-3">
+            <form class="d-flex flex-column gap-3 overflow-auto" method="post" action="/Categories/Edit/@Model.Id">
+                <div>
+                    @Html.Label("CategoryName", "Category Name")
 
-    <button class="btn btn-success" type="submit">Modifica categoria</button>
+                    @Html.TextBox("CategoryName", null, new { @class = "form-control" })
 
-}
+                    @Html.ValidationMessageFor(m => m.CategoryName, null, new{@class = "text-danger"})
+                </div>
+                <button class="btn btn-outline" style="background-color:pink; color:black;" type="submit">Edit Category</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+

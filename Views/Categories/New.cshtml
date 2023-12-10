@@ -1,23 +1,31 @@
 ﻿@model OnlineShop.Models.Category
 
 
-<h2>Adaugare Categorie</h2>
+
+<div class="container py-5">
+    <h2 class="text-center">Add Category</h2>
+
+    <div class="row">
+        <div class="col-6 offset-3">
+            <form class="d-flex flex-column gap-3 overflow-auto" method="post" enctype="multipart/form-data" action="/Categories/New">
+                <div>
+                    @Html.Label("CategoryName", "Category Name")
+
+                    @Html.TextBox("CategoryName", null, new { @class = "form-control" })
+
+                    @Html.ValidationMessageFor(m => m.CategoryName, null, new{ @class = "text-danger"})
+                </div>
+    
+                <button class="btn btn-outline" style="background-color:pink; color:black;" type="submit">Add Category</button>
+            </form>
+        </div>
+    </div>
+</div>
 
 
-@using (Html.BeginForm(actionName: "New", controllerName: "Categories", method: FormMethod.Post,
-       routeValues: new { id = Model.Id }))
-{
 
-    @Html.Label("CategoryName", "Denumire categorie")
-    <br />
 
-    @Html.TextBox("CategoryName", null, new { @class = "form-control" })
 
-    @Html.ValidationMessageFor(m => m.CategoryName, null, new{ @class = "text-danger"})
-    <br />
-    <br />
 
-    <button class="btn btn-success" type="submit">Adauga categorie</button>
 
-}
 

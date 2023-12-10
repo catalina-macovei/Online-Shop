@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OnlineShop.Models;
 using OnlineShop.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace OnlineShop.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext db;
@@ -54,13 +57,14 @@ namespace OnlineShop.Controllers
         {
             if (ModelState.IsValid)
             {
+                
                 //add the object received to database
                 db.Categories.Add(cat);
 
                 //commit
                 db.SaveChanges();
 
-                TempData["message"] = "Categoria a fost adaugata";
+                TempData["message"] = "The category has been added";
 
                 return RedirectToAction("Index");
             }
@@ -95,7 +99,7 @@ namespace OnlineShop.Controllers
                 //commit
                 db.SaveChanges();
 
-                TempData["message"] = "Categoria a fost modificata!";
+                TempData["message"] = "The category has been edited";
                 return RedirectToAction("Index");
             }
             else
@@ -108,7 +112,10 @@ namespace OnlineShop.Controllers
         public ActionResult Delete(int id)
         {
             //find the category object to be deleted
-            Category category = db.Categories.Find(id);
+            Category category = db.Categories.Include("Products")
+                                             .Include("Products.Comments")
+                                             .Where(c => c.Id == id)
+                                             .First();
 
             //delete it from the database
             db.Categories.Remove(category);
@@ -116,7 +123,7 @@ namespace OnlineShop.Controllers
             //commit
             db.SaveChanges();
 
-            TempData["message"] = "Categoria a fost stearsa";
+            TempData["message"] = "The category has been deleted";
             return RedirectToAction("Index");
         }
     }

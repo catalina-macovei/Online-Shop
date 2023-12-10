@@ -7,7 +7,7 @@ namespace OnlineShop.Models
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Numele categoriei este obligatoriu")]
+        [Required(ErrorMessage = "The name of the category is mandatory")]
         public string CategoryName { get; set; }
 
         public virtual ICollection<Product>? Products { get; set; }

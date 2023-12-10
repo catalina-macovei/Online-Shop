@@ -1,23 +1,22 @@
 ﻿@model OnlineShop.Models.Comment
-@{
-    ViewBag.Title = "Edit";
-}
 
-<h2>Editare comentariu</h2>
-<br />
 
-@using (Html.BeginForm(actionName: "Edit", controllerName: "Comments", method: FormMethod.Post,
-       routeValues: new { id = Model.Id }))
-{
+<div class="container py-5">
+    <h2 class="text-center">Edit Comment</h2>
 
-    @Html.Label("Content", "Continut comentariu")
-    <br />
+    <div class="row">
+        <div class="col-6 offset-3">
+            <form class="d-flex flex-column gap-3 overflow-auto" method="post" action="/Comments/Edit/@Model.Id">
+                <div>
+                    @Html.Label("Content", "Content")
 
-    @Html.TextArea("Content", null, new { @class = "form-control" })
-    <br />
-    @Html.ValidationMessageFor(m => m.Content, null, new{@class = "text-danger"})
+                    @Html.TextBox("Content", null, new { @class = "form-control" })
 
-    <br />
-    <button class="btn  btn-primary" type="submit">Editeaza comentariul</button>
+                    @Html.ValidationMessageFor(m => m.Content, null, new{@class = "text-danger"})
+                </div>
+                <button class="btn btn-outline" style="background-color:pink; color:black;" type="submit">Edit Comment</button>
+            </form>
+        </div>
+    </div>
+</div>
 
-}
