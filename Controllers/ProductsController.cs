@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,13 +14,31 @@ namespace OnlineShop.Controllers
     {
         private readonly ApplicationDbContext db;
         private readonly IWebHostEnvironment _env;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public ProductsController(IWebHostEnvironment environment, ApplicationDbContext context)
+        public ProductsController(IWebHostEnvironment environment, ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _env = environment;
             db = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
+        //Conditii de afisare a butoanelor de editare si stergere
+        private void SetAccessRights()
+        {
+            // ViewBag.AfisareButoane = false;
+
+            // if (User.IsInRole("Editor"))
+            // {
+                // ViewBag.AfisareButoane = true;
+            // }
+
+            ViewBag.EsteAdmin = User.IsInRole("Admin");
+
+            ViewBag.UserCurent = _userManager.GetUserId(User);
+        }
 
         // se afiseaza lista tuturor produselor impreuna cu categoria
         // HttpGet implicit aici 
@@ -45,31 +65,60 @@ namespace OnlineShop.Controllers
         {
             Product product = db.Products.Include("Category").Include("Comments")
                                 .Where(product => product.Id == id).First();
+
+            SetAccessRights();
+
             return View(product);
         }
 
         [HttpPost]
+        [Authorize(Roles = "User,Collaborator,Admin")]
         public IActionResult Show([FromForm] Comment comment)
         {
             comment.Date = DateTime.Now;
-            comment.Rating = 0;
+
+            comment.UserId = _userManager.GetUserId(User);
+
+
+            SetAccessRights();
+
             if (ModelState.IsValid)
             {
                 db.Comments.Add(comment);
                 db.SaveChanges();
-                return Redirect("/Products/Show/" +
-                comment.ProductId);
+
+                //recalculam rating-ul produsului comentat
+                Product prod = db.Products.Find(comment.ProductId);
+
+                //selectam ratingurile comentariilor produsului
+                var ratings = from c in db.Comments
+                              where (c.ProductId == prod.Id && c.Rating != null)
+                              select c.Rating;
+                //recalculam media
+                var result = 0.00;
+
+                if (ratings.Count() != 0)
+                {
+                    result = ratings.Average().Value;
+                }
+
+                prod.Rating = (int)Math.Round(result);
+
+                db.SaveChanges();
+
+
+                return Redirect("/Products/Show/" + comment.ProductId);
             }
             else
             {
-                Product prod =
-                db.Products.Include("Category").Include("Comments")
-                .Where(prod => prod.Id == comment.ProductId)
-                .First();
-                //return Redirect("/Articles/Show/" + comm.ArticleId);
+                Product prod = db.Products.Include("Category")
+                                          .Include("Comments")
+                                          .Where(prod => prod.Id == comment.ProductId)
+                                          .First();
+
                 return View(prod);
             }
-    }
+        }
 
 
         // HttpGet implicit
@@ -217,5 +266,6 @@ namespace OnlineShop.Controllers
             return $"/{relativeFilePath}";
         }
 
+       
     }
 }
