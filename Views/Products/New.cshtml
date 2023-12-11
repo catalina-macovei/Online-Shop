@@ -6,26 +6,33 @@
     <div class="row">
         <div class="col-6 offset-3">
             <form class="d-flex flex-column gap-3 overflow-auto" method="post" enctype="multipart/form-data" action="/Products/New">
+                
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
                 <div>
                     @Html.Label("Title", "Product Name")
 
                     @Html.TextBox("Title", null, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
                 </div>
                 <div>
                     @Html.Label("Description", "Product Decription")
 
                     @Html.TextArea("Description", null, new { @class = "form-control"})
+                    @Html.ValidationMessage("Description", null, new { @class = "text-danger" })
                 </div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div >
                         @Html.Label("Price", "Price")
 
                         @Html.TextBox("Price", null, new { @class = "form-control" })
+                        @Html.ValidationMessage("Price", null, new { @class = "text-danger" })
                     </div>
                     <div >
                         @Html.Label("Stock", "Stock")
 
                         @Html.TextBox("Stock", null, new { @class = "form-control" })
+                        @Html.ValidationMessage("Stock", null, new { @class = "text-danger" })
                     </div>
                 </div>
                 <div>
@@ -34,11 +41,17 @@
                     new SelectList(Model.Categories, "Value", "Text"),
                     "Select Category", new { @class = "form-control" })
 
+                    @Html.ValidationMessageFor(m => m.CategoryId, null, new { @class = "text-danger" })
                 </div>
                 <div>
-                    <label for="file">Upload Photo</label>
-                    <input type="file" id="file" name="file" />
+                    <div>
+                        <label for="file">Upload Photo</label>
+                        <input type="file" id="file" name="file" />
+
+                    </div>
+                    @Html.ValidationMessage("PhotoSrc", null, new { @class = "text-danger" })
                 </div>
+               
                 <button class="btn btn-outline" style="background-color:pink; color:black;" type="submit">Add Product</button>
             </form>
         </div>

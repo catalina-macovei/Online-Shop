@@ -28,12 +28,12 @@ namespace OnlineShop.Controllers
         //Conditii de afisare a butoanelor de editare si stergere
         private void SetAccessRights()
         {
-            // ViewBag.AfisareButoane = false;
+            ViewBag.AfisareButoane = false;
 
-            // if (User.IsInRole("Editor"))
-            // {
-                // ViewBag.AfisareButoane = true;
-            // }
+            if (User.IsInRole("Collaborator"))
+            {
+                ViewBag.AfisareButoane = true;
+            }
 
             ViewBag.EsteAdmin = User.IsInRole("Admin");
 
@@ -42,9 +42,10 @@ namespace OnlineShop.Controllers
 
         // se afiseaza lista tuturor produselor impreuna cu categoria
         // HttpGet implicit aici 
+        [Authorize(Roles = "User,Collaborator,Admin")]
         public IActionResult Index()
         {
-            var products = db.Products.Include("Category");
+            var products = db.Products.Include("Category").Include("User");
 
             // ViewBag.OriceDenumireSugestiva
             ViewBag.Products = products;
@@ -52,6 +53,7 @@ namespace OnlineShop.Controllers
             if (TempData.ContainsKey("message"))
             {
                 ViewBag.Message = TempData["message"];
+                ViewBag.Alert = TempData["messageType"];
             }
 
             return View();
@@ -61,11 +63,15 @@ namespace OnlineShop.Controllers
         // HttpGet implicit
         // Afisare unui produs in functie de id
         // si impreuna cu categoria din care fac parte
+        [Authorize(Roles = "User,Collaborator,Admin")]
         public IActionResult Show(int id)
         {
-            Product product = db.Products.Include("Category").Include("Comments")
-                                .Where(product => product.Id == id).First();
-
+            Product product = db.Products.Include("Category")
+                                         .Include("User")
+                                         .Include("Comments")
+                                         .Include("Comments.User")
+                                        .Where(product => product.Id == id)
+                                        .First();
             SetAccessRights();
 
             return View(product);
@@ -78,9 +84,6 @@ namespace OnlineShop.Controllers
             comment.Date = DateTime.Now;
 
             comment.UserId = _userManager.GetUserId(User);
-
-
-            SetAccessRights();
 
             if (ModelState.IsValid)
             {
@@ -115,6 +118,7 @@ namespace OnlineShop.Controllers
                                           .Include("Comments")
                                           .Where(prod => prod.Id == comment.ProductId)
                                           .First();
+                SetAccessRights();
 
                 return View(prod);
             }
@@ -124,9 +128,11 @@ namespace OnlineShop.Controllers
         // HttpGet implicit
         // Afisare formular de completare detalii produs
         // Aici se va selecta si categoria din care face parte
+        [Authorize(Roles = "Collaborator,Admin")]
         public IActionResult New()
         {
             Product product = new Product();
+
             product.Categories = GetAllCategories();
 
             return View(product);
@@ -134,26 +140,54 @@ namespace OnlineShop.Controllers
 
 
         // Adaugare Produs in BD
+        [Authorize(Roles = "Collaborator,Admin")]
         [HttpPost]
         public async Task<IActionResult> New(Product product, IFormFile file)
         {
-            
+
             //product.Categories = GetAllCategories();
 
-            try
+            // iau userId utilizator care adauga produs in BD
+            
+            product.UserId = _userManager.GetUserId(User);
+
+            var res = await SaveImage(file);
+            
+            if (res == null)
             {
-                if (file != null && file.Length > 0)
-                {
-                    product.PhotoSrc = await SaveImage(file);
-                }
+                ModelState.AddModelError("PhotoSrc", "Please load a jpg, jpeg, png, and gif file type.");
+            } 
+            else
+            {
+                product.PhotoSrc = res;
+            }
+
+            
+
+            if (ModelState.IsValid)
+            {
                 db.Products.Add(product);
                 db.SaveChanges();
-                TempData["message"] = "Produsul a fost adaugat!";
-                return RedirectToAction("Index");
 
+                TempData["message"] = "Product has been added!";
+                TempData["messageType"] = "alert-success";
+
+                return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            else
             {
+                foreach (var modelStateEntry in ModelState.Values)
+                {
+                    foreach (var error in modelStateEntry.Errors)
+                    {
+                        // Log or debug the error messages
+                        var errorMessage = error.ErrorMessage;
+                        var exception = error.Exception;
+                        // Log these error messages for debugging purposes
+                    }
+                }
+
+                product.Categories = GetAllCategories(); 
                 return View(product);
             }
         }
@@ -162,56 +196,107 @@ namespace OnlineShop.Controllers
         // Editare produs din BD 
         // Categoria selectata din dropdown
         // Afisare formular impreuna cu datele aferente produsului
+        [Authorize(Roles = "Collaborator,Admin")]
         public IActionResult Edit(int id)
         {
             Product product = db.Products.Include("Category")
-                                .Where(product => product.Id == id).First();
+                                .Where(product => product.Id == id)
+                                .First();
 
             product.Categories = GetAllCategories();
 
-            return View(product);
+            if (product.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
+            {
+                return View(product);
+            }
+            else
+            {
+                TempData["message"] = "You're unable to modify a product you didn't add!";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Index");
+            }
+
         }
 
         // HttpPost
         // Adaugare produs modificat in baza de date
+        [Authorize(Roles = "Collaborator,Admin")]
         [HttpPost]
         public async Task<IActionResult> Edit(int id, Product requestProduct, IFormFile file)
         {
             Product product = db.Products.Find(id);
             requestProduct.Categories = GetAllCategories();
-            try 
-            { 
-                product.Title = requestProduct.Title;
-                product.Description = requestProduct.Description;
-                product.Price = requestProduct.Price;
-                product.Stock = requestProduct.Stock;
-                product.CategoryId = requestProduct.CategoryId;
-                if (file != null && file.Length > 0)
-                {
-                    product.PhotoSrc = await SaveImage(file);
 
-                }
-                db.SaveChanges();
+            product.UserId = _userManager.GetUserId(User);
 
-                TempData["message"] = "Produsul a fost editat!";
+            var res = await SaveImage(file);
 
-                return RedirectToAction("Index");
+            if (res == null)
+            {
+                ModelState.AddModelError("PhotoSrc", "Please load a jpg, jpeg, png or gif file type.");
             }
-            catch (Exception ex)
+            else
+            {
+                product.PhotoSrc = res;
+            }
+
+
+            if (ModelState.IsValid)
+            {
+                if (product.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
+                {
+                    product.Title = requestProduct.Title;
+                    product.Description = requestProduct.Description;
+                    product.Price = requestProduct.Price;
+                    product.Stock = requestProduct.Stock;
+                    product.CategoryId = requestProduct.CategoryId;
+
+                    if (file != null && file.Length > 0)
+                    {
+                        product.PhotoSrc = await SaveImage(file);
+
+                    }
+                    TempData["message"] = "Product has been modified!";
+                    TempData["messageType"] = "alert-success";
+
+                    db.SaveChanges();
+
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    TempData["message"] = "You're unable to modify a product you didn't add!";
+                    TempData["messageType"] = "alert-danger";
+                    return RedirectToAction("Index");
+                }
+
+            }
+            else
             {
                 return View(requestProduct);
             }
         }
 
         [HttpPost]
+        [Authorize(Roles = "Collaborator,Admin")]
         public IActionResult Delete(int id)
         {
-            Product requestProduct = db.Products.Find(id);
+            Product requestProduct = db.Products.Include("Comments")
+                                         .Where(product => product.Id == id)
+                                         .First();
+            if (requestProduct.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
+            {
+                db.Products.Remove(requestProduct);
+                db.SaveChanges();
 
-            db.Products.Remove(requestProduct);
-            db.SaveChanges();
-
-            TempData["message"] = "Produsul a fost sters!";
+                TempData["message"] = "Product has been deleted!";
+                TempData["messageType"] = "alert-success";
+            }
+            else
+            {
+                TempData["message"] = "You're unable to delete a product you didn't add!";
+                TempData["messageType"] = "alert-danger";
+            }
 
             return RedirectToAction("Index");
         }
@@ -241,9 +326,20 @@ namespace OnlineShop.Controllers
         }
 
 
-        private async Task<string> SaveImage(IFormFile file)
+        private async Task<string?> SaveImage(IFormFile file)
         {
-            var fileExtension = Path.GetExtension(file.FileName);
+            if (file == null)
+            {
+                return null;
+            }
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                return null;
+            }
+
             var uploadsFolder = Path.Combine("img", "products");
             var webRootPath = _env.WebRootPath;
 
