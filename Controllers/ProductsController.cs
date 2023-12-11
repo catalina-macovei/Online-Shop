@@ -233,7 +233,7 @@ namespace OnlineShop.Controllers
 
             if (res == null)
             {
-                ModelState.AddModelError("Image", "Only jpg, jpeg, png, and gif file types are allowed.");
+                ModelState.AddModelError("PhotoSrc", "Please load a jpg, jpeg, png or gif file type.");
             }
             else
             {
