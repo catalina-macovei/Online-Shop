@@ -1,0 +1,78 @@
+﻿
+<section style="background-color: #eee;" class="d-flex flex-column align-items-center justify-content-center">
+    @if (ViewBag.Message != null)
+    {
+
+        <h2 class="alert-success p-3 rounded-3 text-center mt-2">@ViewBag.Message</h2>
+    }
+    <div class="container row mx-auto">
+        <div class="container text-center d-flex justify-content-between align-items-center">
+            <h4 class="mt-4 mb-5"><strong>Bestsellers</strong></h4>
+            <div>
+                <a class="btn btn-outline" style="background-color:pink; color:black;" href="/Products/Index" role="button">Back</a>
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Product</th>
+                    <th scope="col">Created</th>
+                    <th scope="col" class="">Handle</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in ViewBag.Products)
+                {
+                    <tr>
+                        <th scope="row">@product.Id</th>
+                        <td>
+                            <a asp-action="Show" asp-controller="Products" asp-route-id="@product.Id">
+                                @product.Title
+                            </a>
+                        </td>
+                        <td>@product.User.UserName</td>
+                        <td>
+                            <div class="d-flex gap-2 justify-content-end">
+                                <form class="d-flex flex-column gap-3 overflow-auto" method="post" action="/Products/UpdateProductIsActive/@product.Id">
+                                    <button type="submit" class="btn btn-info">Update</button>
+                                </form>
+                                <form class="d-flex flex-column gap-3 overflow-auto" method="post" action="/Products/Delete/@product.Id">
+                                    <button class="btn btn-danger" type="submit">Delete</button>
+                                </form>
+                            </div>
+
+                        </td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+        <div class="row text-center mx-auto">
+
+
+        </div>
+    </div>
+
+    <div class=" mb-2 ">
+        <nav aria-label="Page navigation example" style="color:pink">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" style="color:pink" href="/Products/Index?page=1" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                @for (int i = 1; i <= ViewBag.lastPage; i++)
+                {
+                    <li class="page-item"> <a class="page-link" style="color:pink" href="/Products/Index?page=@i">@(i)</a> </li>
+                }
+                <li class="page-item">
+                    <a class="page-link" style="color:pink" href="/Products/Index?page=@(ViewBag.lastPage)" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+</section>
