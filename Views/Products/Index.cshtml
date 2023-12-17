@@ -1,9 +1,9 @@
 ﻿
-<section style="background-color: #eee;">
+<section style="background-color: #eee;" class="d-flex flex-column align-items-center justify-content-center">
     @if (ViewBag.Message != null)
     {
 
-        <h2 class="alert-success p-3 rounded-3 text-center mb-5">@ViewBag.Message</h2>
+        <h2 class="alert-success p-3 rounded-3 text-center mt-2">@ViewBag.Message</h2>
     }
     <div class="container row mx-auto">
         <div class="container text-center d-flex justify-content-between align-items-center">
@@ -87,20 +87,20 @@
         </div>
     </div>
 
-    <div>
-        <nav aria-label="Page navigation example">
+    <div class=" mb-2 ">
+        <nav aria-label="Page navigation example" style="color:pink">
             <ul class="pagination">
                 <li class="page-item">
-                    <a class="page-link" href="/Products/Index?page=1" aria-label="Previous">
+                    <a class="page-link" style="color:pink" href="/Products/Index?page=1" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                      </a>
                 </li>
                 @for (int i = 1; i <= ViewBag.lastPage; i++)
                 {
-                    <li class="page-item"> <a class="page-link"  href="/Products/Index?page=@i">@(i)</a> </li>
+                    <li class="page-item"> <a class="page-link" style="color:pink" href="/Products/Index?page=@i">@(i)</a> </li>
                 }
                 <li class="page-item">
-                    <a class="page-link" href="/Products/Index?page=@(ViewBag.lastPage)" aria-label="Next">
+                    <a class="page-link" style="color:pink" href="/Products/Index?page=@(ViewBag.lastPage)" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>

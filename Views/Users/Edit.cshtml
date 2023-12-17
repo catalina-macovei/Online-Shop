@@ -5,51 +5,57 @@
 @using (Html.BeginForm(actionName: "Edit", controllerName: "Users",
        method: FormMethod.Post, routeValues: new { id = @Model.Id }))
 {
+    <div class="m-5" style="width:40%">
+        <i class="bi bi-person"></i>
+        @Html.Label("UserName", "Nume utilizator", new { @class = "" })
 
-    <i class="bi bi-person"></i>
-    @Html.Label("UserName", "Nume utilizator", new { @class = "" })
+        <br />
 
-    <br />
+        @Html.EditorFor(m => m.UserName)
 
-    @Html.EditorFor(m => m.UserName)
+        <br />
+        <br />
+        <i class="bi bi-envelope"></i>
+        @Html.Label("Email", "Email utilizator", new { @class = "" })
 
-    <br />
+        <br />
 
-    <i class="bi bi-envelope"></i>
-    @Html.Label("Email", "Email utilizator", new { @class = "" })
+        @Html.EditorFor(m => m.Email)
 
-    <br />
+        <br />
+        <br />
 
-    @Html.EditorFor(m => m.Email)
+        <i class="bi bi-person"></i>
+        @Html.Label("FirstName", "Nume utilizator", new { @class = "" })
 
-    <br />
+        <br />
+
+        @Html.EditorFor(m => m.FirstName)
+        <br />
+        <br />
+
+        <i class="bi bi-person"></i>
+        @Html.Label("LastName", "Prenume utilizator", new { @class = "" })
+
+        <br />
+
+        @Html.EditorFor(m => m.LastName)
+        <br />
+        <br />
+
+        <div >
+            <i class="bi bi-card-list"></i>
+            <label>Selectati rolul</label>
+            @Html.DropDownList("newRole", new SelectList(Model.AllRoles, "Value", "Text", ViewBag.UserRole), null, new { @class = "form-control" })
+        </div>
+        <br />
+
+        <br />
+        <button class="btn btn-sm btn-success" type="submit">Editare user</button>
+
+    </div>
 
 
-    <i class="bi bi-person"></i>
-    @Html.Label("FirstName", "Nume utilizator", new { @class = "" })
-
-    <br />
-
-    @Html.EditorFor(m => m.FirstName)
-
-    <br />
-
-    <i class="bi bi-person"></i>
-    @Html.Label("LastName", "Prenume utilizator", new { @class = "" })
-
-    <br />
-
-    @Html.EditorFor(m => m.LastName)
-
-    <br />
-
-    <i class="bi bi-card-list"></i>
-    <label>Selectati rolul</label>
-    @Html.DropDownList("newRole", new SelectList(Model.AllRoles, "Value", "Text", ViewBag.UserRole), null, new { @class = "form-control" })
-
-    <br />
-
-    <button class="btn btn-sm btn-success" type="submit">Editare user</button>
 
 
 }
