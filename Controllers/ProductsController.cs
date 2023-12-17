@@ -45,6 +45,9 @@ namespace OnlineShop.Controllers
         [Authorize(Roles = "User,Collaborator,Admin")]
         public IActionResult Index()
         {
+            // Alegem sa afisam 6 produse pe pagina
+            int _perPage = 6;
+
             var products = db.Products.Include("Category").Include("User");
 
             // ViewBag.OriceDenumireSugestiva
@@ -55,6 +58,23 @@ namespace OnlineShop.Controllers
                 ViewBag.Message = TempData["message"];
                 ViewBag.Alert = TempData["messageType"];
             }
+            
+            int totalItems = products.Count();
+
+            var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
+
+            var offset = 0;
+
+            if (!currentPage.Equals(0))
+            {
+                offset = (currentPage - 1) * _perPage;
+            }
+
+            var paginatedProducts = products.Skip(offset).Take(_perPage);
+
+            ViewBag.lastPage = Math.Ceiling((float)totalItems / (float)_perPage);
+
+            ViewBag.Products = paginatedProducts;
 
             return View();
         }
