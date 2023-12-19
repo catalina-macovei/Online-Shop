@@ -42,13 +42,13 @@ namespace OnlineShop.Controllers
 
         // se afiseaza lista tuturor produselor impreuna cu categoria
         // HttpGet implicit aici 
-        [Authorize(Roles = "User,Collaborator,Admin")]
+        
         public IActionResult Index()
         {
             // Alegem sa afisam 6 produse pe pagina
             int _perPage = 6;
 
-            var products = db.Products.Include("Category").Include("User");
+            var products = db.Products.Where(product => product.IsActive).Include("Category").Include("User");
 
             // ViewBag.OriceDenumireSugestiva
             ViewBag.Products = products;
@@ -83,7 +83,7 @@ namespace OnlineShop.Controllers
         // HttpGet implicit
         // Afisare unui produs in functie de id
         // si impreuna cu categoria din care fac parte
-        [Authorize(Roles = "User,Collaborator,Admin")]
+        //[Authorize(Roles = "User,Collaborator,Admin")]
         public IActionResult Show(int id)
         {
             Product product = db.Products.Include("Category")
@@ -172,7 +172,7 @@ namespace OnlineShop.Controllers
             product.UserId = _userManager.GetUserId(User);
 
             var res = await SaveImage(file);
-            
+
             if (res == null)
             {
                 ModelState.AddModelError("PhotoSrc", "Please load a jpg, jpeg, png, and gif file type.");
@@ -186,10 +186,14 @@ namespace OnlineShop.Controllers
 
             if (ModelState.IsValid)
             {
+                var isAdmin = User.IsInRole("Admin");
+
+                product.IsActive = isAdmin;
+
                 db.Products.Add(product);
                 db.SaveChanges();
 
-                TempData["message"] = "Product has been added!";
+                TempData["message"] = isAdmin ? "Product has been added!" : "Reviewing your product!";
                 TempData["messageType"] = "alert-success";
 
                 return RedirectToAction("Index");
@@ -297,6 +301,20 @@ namespace OnlineShop.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public IActionResult UpdateProductIsActive(int Id)
+        {
+            Product product = db.Products.Find(Id);
+            if (product == null)
+            {
+                return RedirectToAction("InReview");
+            }
+            product.IsActive = true; // poate fi isActiev
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
         [HttpPost]
         [Authorize(Roles = "Collaborator,Admin")]
         public IActionResult Delete(int id)
@@ -382,6 +400,77 @@ namespace OnlineShop.Controllers
             return $"/{relativeFilePath}";
         }
 
-       
+        [Authorize(Roles="Admin")]
+        public IActionResult InReview()
+        {
+            // Alegem sa afisam 6 produse pe pagina
+            int _perPage = 6;
+
+            var products = db.Products.Where(product => !product.IsActive).Include("Category").Include("User");
+
+            // ViewBag.OriceDenumireSugestiva
+            ViewBag.Products = products;
+
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Message = TempData["message"];
+                ViewBag.Alert = TempData["messageType"];
+            }
+
+            int totalItems = products.Count();
+
+            var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
+
+            var offset = 0;
+
+            if (!currentPage.Equals(0))
+            {
+                offset = (currentPage - 1) * _perPage;
+            }
+
+            var paginatedProducts = products.Skip(offset).Take(_perPage);
+
+            ViewBag.lastPage = Math.Ceiling((float)totalItems / (float)_perPage);
+
+            ViewBag.Products = paginatedProducts;
+
+            return View();
+        }
+
+        public IActionResult InProgress()
+        {
+            // Alegem sa afisam 6 produse pe pagina
+            int _perPage = 6;
+     
+            var products = db.Products.Where(product => !product.IsActive && _userManager.GetUserId(User) == product.UserId).Include("Category").Include("User");
+
+            // ViewBag.OriceDenumireSugestiva
+            ViewBag.Products = products;
+
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Message = TempData["message"];
+                ViewBag.Alert = TempData["messageType"];
+            }
+
+            int totalItems = products.Count();
+
+            var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
+
+            var offset = 0;
+
+            if (!currentPage.Equals(0))
+            {
+                offset = (currentPage - 1) * _perPage;
+            }
+
+            var paginatedProducts = products.Skip(offset).Take(_perPage);
+
+            ViewBag.lastPage = Math.Ceiling((float)totalItems / (float)_perPage);
+
+            ViewBag.Products = paginatedProducts;
+
+            return View();
+        }
     }
 }

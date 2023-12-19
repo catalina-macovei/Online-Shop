@@ -51,8 +51,16 @@
                     </div>
                     @Html.ValidationMessage("PhotoSrc", null, new { @class = "text-danger" })
                 </div>
-               
-                <button class="btn btn-outline" style="background-color:pink; color:black;" type="submit">Add Product</button>
+                @if (User.IsInRole("Admin"))
+                {
+                    <button class="btn btn-outline" style="background-color:pink; color:black;" type="submit">Add Product</button>
+
+                }
+                @if (User.IsInRole("Collaborator"))
+                {
+                    <button class="btn btn-outline" style="background-color:pink; color:black;" type="submit">Request to Add</button>
+
+                }
             </form>
         </div>
     </div>

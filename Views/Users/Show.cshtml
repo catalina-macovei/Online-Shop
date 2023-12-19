@@ -8,12 +8,12 @@
             <div>
                 <p><i class="bi bi-person"> </i> UserName: @Model.UserName</p>
 
-                <p><i class="bi bi-envelope"></i> Email utilizator: @Model.Email</p>
+                <p><i class="bi bi-envelope"></i> Email: @Model.Email</p>
 
                 @if (ViewBag.Roles.Count > 0)
                 {
                     <div class="d-flex flex-row items-center gap-3">
-                        <p><i class="bi bi-person"> </i> Roluri utilizator:</p>
+                        <p><i class="bi bi-person"> </i> Roles:</p>
                         @foreach (var role in ViewBag.Roles)
                         {
                             <span class="rounded-pill mr-2 px-4 py-2" style="background-color:pink; color:black;">@role</span>
@@ -21,9 +21,6 @@
                     </div>
 
                 }
-
-
-
             </div>
 
             @if ((string)Model.Id != ViewBag.UserCurent)
@@ -31,7 +28,7 @@
                 @using (Html.BeginForm(actionName: "Delete", controllerName: "Users", method: FormMethod.Post, routeValues: new { id = @Model.Id }))
                 {
 
-                    <button class="btn btn-danger" type="submit">Sterge utilizator</button>
+                    <button class="btn btn-danger" type="submit">Delete User</button>
 
                 }
             }

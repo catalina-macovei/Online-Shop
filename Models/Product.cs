@@ -32,6 +32,8 @@ namespace OnlineShop.Models
         public string? UserId { get; set; }
         public virtual ApplicationUser? User { get; set; }
 
+        public bool IsActive { get; set; } = false;
+
         [Required(ErrorMessage = "Category required!")]
         public int? CategoryId { get; set; }
         public virtual Category? Category { get; set; }
