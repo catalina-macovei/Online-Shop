@@ -27,16 +27,16 @@
                     <tr>
                         <th scope="row">@product.Id</th>
                         <td>
-                            <a asp-action="Show" asp-controller="Products" asp-route-id="@product.Id" class="text-decoration-underline" style="color:#FF0065;">
+                            <a asp-action="Show" asp-controller="Products" asp-route-id="@product.Id">
                                 @product.Title
                             </a>
                         </td>
                         <td>@product.User.UserName</td>
                         <td>
                             <div class="d-flex gap-2 justify-content-end">
-                                <form class="d-flex flex-column gap-3 overflow-auto" method="post" action="/Products/UpdateProductIsActive/@product.Id">
-                                    <button type="submit" class="btn btn-info">Approve</button>
-                                </form>
+                                <a asp-action="Edit" asp-controller="Products" asp-route-id="@product.Id" class="d-flex flex-column gap-3 overflow-auto">
+                                    <button class="btn btn-info" type="submit">Edit</button>
+                                </a>
                                 <form class="d-flex flex-column gap-3 overflow-auto" method="post" action="/Products/Delete/@product.Id">
                                     <button class="btn btn-danger" type="submit">Delete</button>
                                 </form>
@@ -49,8 +49,6 @@
             </tbody>
         </table>
         <div class="row text-center mx-auto">
-
-
         </div>
     </div>
 

@@ -13,7 +13,14 @@
                 {
                     <a class="btn btn-outline" style="background-color:pink; color:black;" href="/Products/InReview" role="button">In Review</a>
                 }
-                <a class="btn btn-outline" style="background-color:pink; color:black;" href="/Products/New" role="button">Add Product</a>
+                @if (User.IsInRole("Collaborator"))
+                {
+                    <a class="btn btn-outline" style="background-color:pink; color:black;" href="/Products/InProgress" role="button">Pending</a>
+                }
+                @if (User.IsInRole("Admin") || User.IsInRole("Collaborator"))
+                {
+                    <a class="btn btn-outline" style="background-color:pink; color:black;" href="/Products/New" role="button">Add Product</a>
+                }
             </div>
         </div>
 
@@ -24,7 +31,7 @@
                     <a asp-action="Show" asp-controller="Products" asp-route-id="@product.Id">
                         <div class="card product">
                             <div class="bg-image hover-zoom ripple" data-mdb-ripple-color="light">
-                                <img src="@product.PhotoSrc" class="w-100" />
+                                <img src="@product.PhotoSrc" class="img-fluid w-100" style="object-fit:cover; max-height:200px" />
                                 <div>
                                    
                                     <div class="d-flex justify-content-between align-items-center h-100 g-3 px-1">

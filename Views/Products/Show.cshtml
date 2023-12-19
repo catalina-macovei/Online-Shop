@@ -3,7 +3,7 @@
     <div class="w-50 m-5">
         <div class="card product">
             <div class="bg-image hover-zoom ripple" data-mdb-ripple-color="light">
-                <img src="@Model.PhotoSrc" class="w-100" />
+                <img src="@Model.PhotoSrc" class="w-100" style="object-fit:cover; max-height:400px" />
                 <div>
 
                     <div class="d-flex justify-content-between align-items-center h-100 g-3 px-1">
@@ -37,8 +37,11 @@
                 <div href="" class="text-reset">
                     <h5 class="card-title mb-3">@Model.Title</h5>
                 </div>
-                <div href="" class="text-reset">
+                <div class="text-reset">
                     <p>@Model.Category.CategoryName</p>
+                </div>
+                <div>
+                    <p>@Model.Description</p>
                 </div>
                 <h6 class="mb-3">
                     <s>$@(Model.Price + 10)</s><strong class="ms-2 text-danger">$@Model.Price</strong>
@@ -79,8 +82,10 @@
                                 }
 
                                 <p>@comm.Content</p>
-                                <small class=" text-muted">@comm.Date</small>
-                                @*<strong><i class="bi bi-person"></i>@comm.User.FirstName @comm.User.LastName</strong>*@
+                                <div class="d-flex justify-content-between">
+                                    <small class=" text-muted">@comm.Date</small>
+                                    <p class=" text-muted d-flex gap-2"><i class="bi bi-person "></i>@comm.User.UserName</p>
+                                </div>
 
                             </div>
                             <br>
@@ -131,7 +136,7 @@
                 <div class="col-md-8">
 
                     <div class="card">
-
+                        @if (User.IsInRole("Admin") || User.IsInRole("Collaborator") || User.IsInRole("User")) {
                         <form method="post" action="/Products/Show">
 
                             <div class="card-body">
@@ -175,7 +180,7 @@
                             </div>
 
                         </form>
-
+                        }
                     </div>
 
                 </div>

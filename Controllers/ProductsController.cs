@@ -42,7 +42,7 @@ namespace OnlineShop.Controllers
 
         // se afiseaza lista tuturor produselor impreuna cu categoria
         // HttpGet implicit aici 
-        [Authorize(Roles = "User,Collaborator,Admin")]
+        
         public IActionResult Index()
         {
             // Alegem sa afisam 6 produse pe pagina
@@ -83,7 +83,7 @@ namespace OnlineShop.Controllers
         // HttpGet implicit
         // Afisare unui produs in functie de id
         // si impreuna cu categoria din care fac parte
-        [Authorize(Roles = "User,Collaborator,Admin")]
+        //[Authorize(Roles = "User,Collaborator,Admin")]
         public IActionResult Show(int id)
         {
             Product product = db.Products.Include("Category")
@@ -437,6 +437,40 @@ namespace OnlineShop.Controllers
             return View();
         }
 
-       
+        public IActionResult InProgress()
+        {
+            // Alegem sa afisam 6 produse pe pagina
+            int _perPage = 6;
+     
+            var products = db.Products.Where(product => !product.IsActive && _userManager.GetUserId(User) == product.UserId).Include("Category").Include("User");
+
+            // ViewBag.OriceDenumireSugestiva
+            ViewBag.Products = products;
+
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Message = TempData["message"];
+                ViewBag.Alert = TempData["messageType"];
+            }
+
+            int totalItems = products.Count();
+
+            var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
+
+            var offset = 0;
+
+            if (!currentPage.Equals(0))
+            {
+                offset = (currentPage - 1) * _perPage;
+            }
+
+            var paginatedProducts = products.Skip(offset).Take(_perPage);
+
+            ViewBag.lastPage = Math.Ceiling((float)totalItems / (float)_perPage);
+
+            ViewBag.Products = paginatedProducts;
+
+            return View();
+        }
     }
 }
