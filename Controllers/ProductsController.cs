@@ -312,7 +312,8 @@ namespace OnlineShop.Controllers
             }
             product.IsActive = true; // poate fi isActiev
             db.SaveChanges();
-
+            TempData["message"] = "Product approved!";
+            TempData["messageType"] = "alert-success";
             return RedirectToAction("Index");
         }
         [HttpPost]
