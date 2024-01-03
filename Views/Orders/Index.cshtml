@@ -1,0 +1,35 @@
+﻿
+<section style="background-color: #eee;" class="d-flex flex-column align-items-center justify-content-center">
+    @if (ViewBag.Message != null)
+    {
+
+        <h2 class="alert-success p-3 rounded-3 text-center mt-2">@ViewBag.Message</h2>
+    }
+    <div class="container row mx-auto">
+        <div class="container text-center d-flex justify-content-between align-items-center">
+            <h4 class="mt-4 mb-5"><strong>My Orders</strong></h4>
+        </div>
+
+        <div class="row text-center mx-auto">
+            @foreach (var order in ViewBag.Orders)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <a asp-action="Show" asp-controller="Orders" asp-route-id="@order.Id">
+                        <div class="card-title mb-3">
+                            <h5>Order #@order.Id</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>@order.Date</h6>
+                        </div>
+                        <div class="card-body">
+                            <h6>@order.TotalPrice</h6>
+                        </div>
+                    </a>
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+</section>
