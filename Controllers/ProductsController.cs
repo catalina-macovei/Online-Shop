@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Scaffolding;
+using Microsoft.Extensions.Options;
 using OnlineShop.Data;
 using OnlineShop.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace OnlineShop.Controllers
 {
@@ -45,10 +47,93 @@ namespace OnlineShop.Controllers
         
         public IActionResult Index()
         {
-            // Alegem sa afisam 6 produse pe pagina
-            int _perPage = 6;
 
             var products = db.Products.Where(product => product.IsActive).Include("Category").Include("User");
+            var search = "";
+            var SelectedPriceOption = "";
+            var SelectedRatingOption = "";
+            List<string> optionsList = new List<string> { "Asc", "Desc" };
+
+            // Convert List<string> in List<SelectListItem>
+            List<SelectListItem> selectListItems = optionsList.Select(option =>
+                new SelectListItem { Text = option, Value = option })
+                .ToList();
+
+            ViewBag.OptionsSelectList = selectListItems;
+
+            // MOTOR DE CAUTARE
+            if (Convert.ToString(HttpContext.Request.Query["search"]) !=
+            null)
+            {
+                // eliminam spatiile libere
+                search = Convert.ToString(HttpContext.Request.Query["search"]).Trim();
+
+                List<int> productIds = db.Products.Where (
+                    prod => prod.Title.Contains(search))
+                    .Select(p => p.Id).ToList();
+
+                products = db.Products.Where(prod =>
+                    productIds.Contains(prod.Id))
+                    .Include("Category")
+                    .Include("User");
+
+                if (Convert.ToString(HttpContext.Request.Query["SelectedRatingOption"]) != null)
+                {
+                    SelectedPriceOption = Convert.ToString(HttpContext.Request.Query["SelectedPriceOption"]).Trim();
+
+                    if (!string.IsNullOrEmpty(SelectedPriceOption))
+                    {
+                        if (SelectedPriceOption == "Asc")
+                        {
+                            products = db.Products.Where(prod =>
+                            productIds.Contains(prod.Id))
+                            .Include("Category")
+                            .Include("User")
+                        .OrderBy(p => p.Price);
+                        }
+                        else if (SelectedPriceOption == "Desc")
+                        {
+                            products = db.Products.Where(prod =>
+                           productIds.Contains(prod.Id))
+                           .Include("Category")
+                           .Include("User")
+                        .OrderByDescending(p => p.Price);
+
+                        }
+                    }
+                }
+                if (Convert.ToString(HttpContext.Request.Query["SelectedRatingOption"]) != null)
+                {
+                    SelectedRatingOption = Convert.ToString(HttpContext.Request.Query["SelectedRatingOption"]).Trim();
+
+                    if (!string.IsNullOrEmpty(SelectedRatingOption))
+                    {
+                        if (SelectedRatingOption == "Asc")
+                        {
+                            products = db.Products.Where(prod =>
+                            productIds.Contains(prod.Id))
+                            .Include("Category")
+                            .Include("User")
+                        .OrderBy(p => p.Rating);
+                        }
+                        else if (SelectedRatingOption == "Desc")
+                        {
+                            products = db.Products.Where(prod =>
+                           productIds.Contains(prod.Id))
+                           .Include("Category")
+                           .Include("User")
+                        .OrderByDescending(p => p.Rating);
+
+                        }
+                    }
+                }
+
+            }
+
+            ViewBag.SearchString = search;
+        
+                // Alegem sa afisam 6 produse pe pagina
+                int _perPage = 6;
 
             // ViewBag.OriceDenumireSugestiva
             ViewBag.Products = products;
