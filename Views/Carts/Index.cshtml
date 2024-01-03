@@ -1,0 +1,82 @@
+﻿
+<section style="background-color: #eee;" class="d-flex flex-column align-items-center justify-content-center">
+    @if (TempData.ContainsKey("message"))
+    {
+
+        <h2 class="@TempData["messageType"] p-3 rounded-3 text-center mb-5">@TempData["Message"]</h2>
+    }
+
+    @if (!ViewBag.Empty)
+    {
+        <div class="container row mx-auto">
+
+            <div class="container text-center d-flex justify-content-between align-items-center">
+                <h4 class="mt-4 mb-5"><strong>Cart</strong></h4>
+                <h5 class="mt-4 mb-5">Total price: $@ViewBag.Total</h5>
+                <a href="/Orders/New" class="btn btn-outline" style="background-color:pink; color:black;">Order</a>
+                <div>
+                    <form method="post" asp-action="EmptyCart" asp-controller="Carts">
+                        <button type="submit" class="btn btn-outline" style="background-color:pink; color:black;">
+                            Empty Cart
+                        </button>
+                    </form>
+                  
+                </div>
+            </div>
+
+            <div class="row text-center mx-auto">
+                @foreach (var cart in ViewBag.Carts)
+                {
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        
+                        <div class="card product">
+                            <div class="bg-image hover-zoom ripple" data-mdb-ripple-color="light">
+                                <img src="@cart.Product.PhotoSrc" class="img-fluid w-100" style="object-fit:cover; max-height:200px" />
+                                
+                            </div>
+                            <div class="card-body">
+                                <a asp-action="Show" asp-controller="Products" asp-route-id="@cart.ProductId">
+                                    <div href="" class="text-reset">
+                                        <h5 class="card-title mb-3">@cart.Product.Title</h5>
+                                    </div>
+                                </a>
+                                <div><i class="bi bi-person"></i> @cart.User.UserName</div>
+                                <div href="" class="text-reset">
+                                    <p>@cart.Product.Category.CategoryName</p>
+                                    </div>
+                                <h6 class="mb-3">
+                                    <s>$@(cart.Product.Price + 10)</s><strong class="ms-2 text-danger">$@cart.Product.Price</strong>
+                                </h6>
+                                <form method="post" asp-action="EditQuantity" asp-controller="Carts">
+                                    <input type="hidden" name="ProductId" value="@cart.ProductId" />
+
+                                    <label for="Quantity">Quantity</label>
+                                    <input type="number" id="Quantity" name="Quantity" value="@cart.Quantity" min="1" max="@cart.Product.Stock">
+                                    <button type="submit" class="btn btn-outline">
+                                        Change Quantity
+                                    </button>
+
+                                </form>
+                                
+
+                            </div>
+                            <form method="post" asp-action="DeleteProduct" asp-controller="Carts" asp-route-id="@cart.ProductId">
+                                <button type="submit" class="btn btn-no-outline">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="rating-star" stroke="#FF0000">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                        
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <h2>You don't have any products in your cart yet</h2>
+    }
+
+</section>
