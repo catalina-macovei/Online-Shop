@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.Extensions.Options;
 using OnlineShop.Data;
 using OnlineShop.Models;
+using System.Web;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace OnlineShop.Controllers
@@ -18,13 +19,14 @@ namespace OnlineShop.Controllers
         private readonly IWebHostEnvironment _env;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-
+        public IQueryable<Product> products;
         public ProductsController(IWebHostEnvironment environment, ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _env = environment;
             db = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            products = db.Products.Where(product => product.IsActive).Include("Category").Include("User");
         }
 
         //Conditii de afisare a butoanelor de editare si stergere
@@ -92,8 +94,6 @@ namespace OnlineShop.Controllers
 
         public IActionResult Index()
         {
-
-            var products = db.Products.Where(product => product.IsActive).Include("Category").Include("User");
             var search = "";
             var SelectedPriceOption = "";
             var SelectedRatingOption = "";
@@ -170,7 +170,23 @@ namespace OnlineShop.Controllers
             }
 
             ViewBag.SearchString = search;
-        
+
+            string queryString = Convert.ToString(HttpContext.Request.QueryString);
+
+            // Remove the leading '?' character if present
+            if (queryString.StartsWith("?"))
+            {
+                queryString = queryString.Substring(1);
+            }
+
+            // Remove the "page" attribute and its value
+            var queryParameters = HttpUtility.ParseQueryString(queryString);
+            queryParameters.Remove("page");
+            queryString = queryParameters.ToString();
+
+            // Pass the modified query string parameters to the view
+            ViewBag.QueryString = queryString;
+
             // Alegem sa afisam 6 produse pe pagina
             int _perPage = 6;
 

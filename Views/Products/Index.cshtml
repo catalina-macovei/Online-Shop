@@ -150,16 +150,16 @@
         <nav aria-label="Page navigation example" style="color:pink">
             <ul class="pagination">
                 <li class="page-item">
-                    <a class="page-link" style="color:pink" href="/Products/Index?page=1" aria-label="Previous">
+                    <a class="page-link" style="color:pink" href="/Products/Index?page=1&@ViewBag.QueryString" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                      </a>
                 </li>
                 @for (int i = 1; i <= ViewBag.lastPage; i++)
                 {
-                    <li class="page-item"> <a class="page-link" style="color:pink" href="/Products/Index?page=@i">@(i)</a> </li>
+                    <li class="page-item"> <a class="page-link" style="color:pink" href="/Products/Index?page=@i&@ViewBag.QueryString">@(i)</a> </li>
                 }
                 <li class="page-item">
-                    <a class="page-link" style="color:pink" href="/Products/Index?page=@(ViewBag.lastPage)" aria-label="Next">
+                    <a class="page-link" style="color:pink" href="/Products/Index?page=@(ViewBag.lastPage)&@ViewBag.QueryString" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
