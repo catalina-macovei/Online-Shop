@@ -44,7 +44,52 @@ namespace OnlineShop.Controllers
 
         // se afiseaza lista tuturor produselor impreuna cu categoria
         // HttpGet implicit aici 
-        
+        public IQueryable<Product> SortByRatingAscending(List<int> productIds)
+        {
+            return db.Products
+                .Where(prod => productIds.Contains(prod.Id))
+                .Include("Category")
+                .Include("User")
+                .OrderBy(p => p.Rating);
+        }
+
+        public IQueryable<Product> SortByRatingDescending(List<int> productIds)
+        {
+            return db.Products
+                .Where(prod => productIds.Contains(prod.Id))
+                .Include("Category")
+                .Include("User")
+                .OrderByDescending(p => p.Rating);
+        }
+
+        public IQueryable<Product> SortByPriceAscending(List<int> productIds)
+        {
+            return db.Products
+                .Where(prod => productIds.Contains(prod.Id))
+                .Include("Category")
+                .Include("User")
+                .OrderBy(p => p.Price);
+        }
+
+        public IQueryable<Product> SortByPriceDescending(List<int> productIds)
+        {
+            return db.Products
+                .Where(prod => productIds.Contains(prod.Id))
+                .Include("Category")
+                .Include("User")
+                .OrderByDescending(p => p.Price);
+        }
+
+        public IQueryable<Product> SortByPriceAndRating(List<int> productIds)
+        {
+            return db.Products
+                .Where(prod => productIds.Contains(prod.Id))
+                .Include("Category")
+                .Include("User")
+                .OrderBy(p => p.Rating)
+                .OrderBy(p => p.Price);
+        }
+
         public IActionResult Index()
         {
 
@@ -77,63 +122,57 @@ namespace OnlineShop.Controllers
                     .Include("Category")
                     .Include("User");
 
+                string selectedPriceOption = "";
+                string selectedRatingOption = "";
+
+                if (Convert.ToString(HttpContext.Request.Query["SelectedPriceOption"]) != null)
+                {
+                    selectedPriceOption = Convert.ToString(HttpContext.Request.Query["SelectedPriceOption"]).Trim();
+                }
+
                 if (Convert.ToString(HttpContext.Request.Query["SelectedRatingOption"]) != null)
                 {
-                    SelectedPriceOption = Convert.ToString(HttpContext.Request.Query["SelectedPriceOption"]).Trim();
+                    selectedRatingOption = Convert.ToString(HttpContext.Request.Query["SelectedRatingOption"]).Trim();
+                }
 
-                    if (!string.IsNullOrEmpty(SelectedPriceOption))
+                if (!string.IsNullOrEmpty(selectedPriceOption))
+                {
+                    if (selectedPriceOption == "Asc")
                     {
-                        if (SelectedPriceOption == "Asc")
-                        {
-                            products = db.Products.Where(prod =>
-                            productIds.Contains(prod.Id))
-                            .Include("Category")
-                            .Include("User")
-                        .OrderBy(p => p.Price);
-                        }
-                        else if (SelectedPriceOption == "Desc")
-                        {
-                            products = db.Products.Where(prod =>
-                           productIds.Contains(prod.Id))
-                           .Include("Category")
-                           .Include("User")
-                        .OrderByDescending(p => p.Price);
+                        products = SortByPriceAscending(productIds);
 
+                        if (!string.IsNullOrEmpty(selectedRatingOption))
+                        {
+                            if (selectedRatingOption == "Asc")
+                            {
+                                SortByPriceAndRating(productIds);
+                            }
                         }
                     }
-                }
-                if (Convert.ToString(HttpContext.Request.Query["SelectedRatingOption"]) != null)
-                {
-                    SelectedRatingOption = Convert.ToString(HttpContext.Request.Query["SelectedRatingOption"]).Trim();
-
-                    if (!string.IsNullOrEmpty(SelectedRatingOption))
+                    else if (selectedPriceOption == "Desc")
                     {
-                        if (SelectedRatingOption == "Asc")
-                        {
-                            products = db.Products.Where(prod =>
-                            productIds.Contains(prod.Id))
-                            .Include("Category")
-                            .Include("User")
-                        .OrderBy(p => p.Rating);
-                        }
-                        else if (SelectedRatingOption == "Desc")
-                        {
-                            products = db.Products.Where(prod =>
-                           productIds.Contains(prod.Id))
-                           .Include("Category")
-                           .Include("User")
-                        .OrderByDescending(p => p.Rating);
-
-                        }
+                        products = SortByPriceDescending(productIds);
                     }
                 }
 
+
+                if (!string.IsNullOrEmpty(selectedRatingOption))
+                    {
+                        if (selectedRatingOption == "Asc")
+                        {
+                            products = SortByRatingAscending(productIds);
+                        }
+                        else if (selectedRatingOption == "Desc")
+                        {
+                            products = SortByRatingDescending(productIds);
+                        }
+                    }
             }
 
             ViewBag.SearchString = search;
         
-                // Alegem sa afisam 6 produse pe pagina
-                int _perPage = 6;
+            // Alegem sa afisam 6 produse pe pagina
+            int _perPage = 6;
 
             // ViewBag.OriceDenumireSugestiva
             ViewBag.Products = products;

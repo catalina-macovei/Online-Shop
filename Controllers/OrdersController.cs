@@ -123,6 +123,14 @@ namespace OnlineShop.Controllers
                 //commit
                 db.SaveChanges();
 
+                // stergem tot din cart
+                var entries = db.Carts.Where(c => c.UserId == _userManager.GetUserId(User));
+                foreach (var e in entries)
+                {
+                    db.Carts.Remove(e);
+                }
+                db.SaveChanges();
+
                 TempData["message"] = "Your order has been registered";
                 TempData["messageType"] = "alert-success";
 
