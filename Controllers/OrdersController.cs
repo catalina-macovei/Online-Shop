@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
 using OnlineShop.Models;
+using System.Runtime.ConstrainedExecution;
 
 namespace OnlineShop.Controllers
 {
@@ -23,8 +24,6 @@ namespace OnlineShop.Controllers
 
         private void SetAccessRights()
         {
-            
-            ViewBag.EsteAdmin = User.IsInRole("Admin");
 
             ViewBag.UserCurent = _userManager.GetUserId(User);
         }
@@ -44,6 +43,7 @@ namespace OnlineShop.Controllers
             ViewBag.Username = username;
 
             ViewBag.Userid = (from o in db.Orders
+                              where o.Id == id
                              select o.UserId).First();
 
             var oProducts = from op in db.Ordered_Products
@@ -88,25 +88,25 @@ namespace OnlineShop.Controllers
         [HttpPost]
         public IActionResult New(Order order)
         {
+            //adaugam order in baza de date
             order.Date = DateTime.Now;
             order.UserId = _userManager.GetUserId(User);
 
             if(ModelState.IsValid)
             {
-                try
-                {
-                    db.Orders.Add(order);
-                }
-                catch(Exception) {
-                    return View();
-                }
+                db.Orders.Add(order);
 
                 db.SaveChanges();
 
-                
+                TempData["message"] = "Your order has been registered";
+                TempData["messageType"] = "alert-success";
+
+                //pentru fiecare produs comandat actualizam stocul
                 var cproducts = db.Carts.Include("Product").Where(c => c.UserId == _userManager.GetUserId(User));
 
-                foreach(var cpr in cproducts)
+                List<int?> unavailableProductIds = new List<int?>();
+
+                foreach (var cpr in cproducts)
                 {
                     Ordered_Product op = new Ordered_Product();
                     op.ProductId = cpr.ProductId;
@@ -115,11 +115,31 @@ namespace OnlineShop.Controllers
 
                     db.Ordered_Products.Add(op);
 
+
                     Product p = db.Products.Find(cpr.ProductId);
                     p.Stock -= cpr.Quantity;
 
+                    //daca au fost comandate toate bucatile din acel produs, preluam id ul produsului
+                    if(p.Stock == 0)
+                    {
+                        unavailableProductIds.Add(cpr.ProductId);
+                    }
                 }
-                
+
+                db.SaveChanges();
+
+                //stergem din cart-urile tuturor utilizatorilor produsele care au devenit indisponibile
+                foreach (var unavailableProductId in unavailableProductIds)
+                {
+                    var unavailableProducts = db.Carts.Where(c => c.ProductId == unavailableProductId);
+
+                    foreach (var unavailableProduct in unavailableProducts)
+                    {
+                        db.Remove(unavailableProduct);
+                    }
+                    
+                }
+
                 //commit
                 db.SaveChanges();
 
@@ -131,8 +151,6 @@ namespace OnlineShop.Controllers
                 }
                 db.SaveChanges();
 
-                TempData["message"] = "Your order has been registered";
-                TempData["messageType"] = "alert-success";
 
                 return RedirectToAction("Index");
             }

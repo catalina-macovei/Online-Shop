@@ -16,10 +16,7 @@
                 <div class="col-lg-4 col-md-6 m-4 rounded-2" style="background-color:white;">
                     <a asp-action="Show" asp-controller="Orders" asp-route-id="@order.Id">
                         <div class="card-title mb-3">
-                            <h5>Order #@order.Id</h5>
-                        </div>
-                        <div class="card-body">
-                            <h6>@order.Date</h6>
+                            <h5>Order @order.Date</h5>
                         </div>
                         <div class="card-body">
                             <h6 class="text-center">Total price: @order.TotalPrice $</h6>
