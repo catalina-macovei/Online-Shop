@@ -82,16 +82,6 @@ namespace OnlineShop.Controllers
                 .OrderByDescending(p => p.Price);
         }
 
-        public IQueryable<Product> SortByPriceAndRating(List<int> productIds)
-        {
-            return db.Products
-                .Where(prod => productIds.Contains(prod.Id))
-                .Include("Category")
-                .Include("User")
-                .OrderBy(p => p.Rating)
-                .OrderBy(p => p.Price);
-        }
-
         public IActionResult Index()
         {
             var search = "";
@@ -141,13 +131,6 @@ namespace OnlineShop.Controllers
                     {
                         products = SortByPriceAscending(productIds);
 
-                        if (!string.IsNullOrEmpty(selectedRatingOption))
-                        {
-                            if (selectedRatingOption == "Asc")
-                            {
-                                SortByPriceAndRating(productIds);
-                            }
-                        }
                     }
                     else if (selectedPriceOption == "Desc")
                     {
@@ -173,24 +156,23 @@ namespace OnlineShop.Controllers
 
             string queryString = Convert.ToString(HttpContext.Request.QueryString);
 
-            // Remove the leading '?' character if present
+            // sterg ? din substring daca exista
             if (queryString.StartsWith("?"))
             {
                 queryString = queryString.Substring(1);
             }
 
-            // Remove the "page" attribute and its value
+            // sterg page atribute, deoarece ea este stabilita in view
             var queryParameters = HttpUtility.ParseQueryString(queryString);
             queryParameters.Remove("page");
             queryString = queryParameters.ToString();
 
-            // Pass the modified query string parameters to the view
+            // dau parse la valoarea querystring in view
             ViewBag.QueryString = queryString;
 
-            // Alegem sa afisam 6 produse pe pagina
             int _perPage = 6;
 
-            // ViewBag.OriceDenumireSugestiva
+            // initializez produsele in view 
             ViewBag.Products = products;
 
             if (TempData.ContainsKey("message"))
